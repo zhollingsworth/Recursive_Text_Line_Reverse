@@ -1,0 +1,183 @@
+/***********************************************************************************
+ CS3410 Data Structures
+ Assignment 5
+ 
+ Zac Hollingsworth
+ March 9, 2013
+ 
+ Write a recursive method to reverse the ordering of lines in a text file. You may
+ use any data structure you want but the reverse method must be recursive. Your
+ main() method will prompt the user to enter the input file name. You can assume
+ that the user will use only text files. Your program will read the text file and
+ then produce an output on the console displaying the lines of text in reverse order.
+ 
+ Also: Indicate an error message when the input file has no text in the file.
+ 
+ ***********************************************************************************/
+
+//******************************************************
+//Recursive method starts on line 143
+//******************************************************
+
+import java.util.*;
+import java.io.*;
+
+//******************************************************
+//Class to create nodes
+//******************************************************
+class Node<String>{
+	Node<String> next;
+	private String value;
+	//Constructor
+	public Node(String value){
+		this.value = value;
+	}
+	public String getValue(){
+		return value;
+	}
+}
+
+//******************************************************
+//Class to implement linked list
+//******************************************************
+class LinkList{
+	static Scanner input = new Scanner(System.in);
+	static int numInts = 0;
+	
+	Node<String> head = null;
+	Node<String> tail = null;
+		
+	public LinkList(){
+		head = null;
+		tail = null;
+	}
+	//******************************************************
+	//Method to add node to the end of the queue
+	//******************************************************
+	public void enqueue(String value){
+		Node<String> newNode = new Node<String>(value);
+		if(tail == null)
+			head = tail = newNode;
+		else{
+			tail.next = newNode;
+			tail = tail.next;
+		}
+		numInts++;
+	}
+
+	//******************************************************
+	//Method to delete node from the front of the queue
+	//******************************************************
+	public String dequeue(){
+		String j = "";
+		if(numInts == 0)
+			System.out.println("Nothing stored in Queue.");
+		else if(head.next == null){
+			j = head.getValue();
+			head = tail = null;
+			numInts --;
+		}else{
+			j = head.getValue();
+			head = head.next;
+			numInts --;
+		}
+		return j;
+	}
+	
+	//******************************************************
+	//Method to display first item in queue
+	//******************************************************
+	public void displayFirst(){
+		System.out.println("Item at Front: "+head);
+	}
+	
+	//******************************************************
+	// Method to display last item in queue
+	//******************************************************
+	public void displayLast(){
+		System.out.println("Item at Rear: "+tail);
+	}
+		
+	//******************************************************
+	// Method to display number of items in queue
+	//******************************************************
+	public int numItems(){
+		return numInts;
+	}
+	
+	//******************************************************
+	// Method to display items in queue
+	//******************************************************
+	public void displayQueue(){
+		if(numInts != 0){
+			Node<String> current = head;
+			System.out.print("Items in Queue: ");
+			while(current != null){
+				System.out.print(current);
+				current = current.next;
+				System.out.print(" ");
+			}//end of while
+		}//end of if
+		else
+			System.out.print("No items in Queue");
+		System.out.println();
+	}
+}
+
+//******************************************************
+//Class for reading and printing files
+//******************************************************	
+class ReadFile{
+	public ReadFile(){
+	}
+	LinkList queue = new LinkList();
+	
+	//******************************************************
+	//Method to add file data to Linked List
+	//******************************************************
+	public void invertFile(String fileName){
+		try{
+			FileInputStream fis = new FileInputStream(fileName);
+			DataInputStream dis = new DataInputStream(fis);
+			BufferedReader br = new BufferedReader(new InputStreamReader(dis));
+			String strLine;
+			if((strLine = br.readLine()) == null)
+				System.out.println("File is empty");
+			else{
+				do{
+					queue.enqueue(strLine);
+				}while((strLine = br.readLine()) != null);
+			}
+			dis.close();
+		}catch (Exception e){
+			System.out.println("Filename does not exist.");
+		}	
+		reverse();
+	}
+	//******************************************************
+	//Recurssive method
+	//******************************************************
+	public void reverse(){
+		if (queue.numItems() == 0)
+			System.out.println("");
+		else{
+			String p = queue.dequeue();
+			reverse();
+			System.out.println(p);
+		}
+	}
+		
+}	
+//******************************************************
+//Main method 
+//******************************************************
+public class Recursive_Text_Line_Reverse{	
+	public static void main(String[] args) throws IOException{
+		ReadFile j = new ReadFile();
+		Scanner fileScan = new Scanner(System.in);
+		System.out.println("Please enter a file name: ");
+		String fileName = fileScan.nextLine();
+		fileName += ".txt";
+		j.invertFile(fileName);		
+	}
+}
